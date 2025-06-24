@@ -20,6 +20,7 @@ class AboutScreen extends StatelessWidget {
               style: Theme.of(context).textTheme.headlineMedium,
             ).animate().fadeIn(duration: 600.ms),
             const SizedBox(height: 16),
+
             Text(
               'I am a passionate Flutter developer with expertise in building cross-platform apps. My journey includes working with Python, Machine Learning, and cloud technologies like AWS. I love creating intuitive and performant applications.',
               style: Theme.of(context).textTheme.bodyLarge,
