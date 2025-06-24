@@ -15,8 +15,7 @@ class PortfolioApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final router = ref.watch(routerProvider);
-    final themeMode = ref.watch(themeModeProvider); // Ensure themeMode is watched
-
+    final themeMode = ref.watch(themeModeProvider);
 
     return MaterialApp.router(
       title: 'Nadeem Ahmed Ansari - Portfolio',
