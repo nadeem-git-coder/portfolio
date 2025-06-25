@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:lottie/lottie.dart';
-import 'package:portfolio/core/theme/app_theme.dart';
 import 'package:portfolio/core/theme/theme_provider.dart';
 import 'package:portfolio/widgets/animated_button.dart';
+import 'package:portfolio/widgets/social_links.dart';
+import 'package:portfolio/models/project_model.dart';
+import 'package:portfolio/widgets/project_card.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
@@ -17,219 +18,695 @@ class HomeScreen extends ConsumerWidget {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
 
+    // Global keys for scrolling to sections
+    final homeKey = GlobalKey();
+    final aboutKey = GlobalKey();
+    final projectsKey = GlobalKey();
+    final skillsKey = GlobalKey();
+    final contactKey = GlobalKey();
+
+    // Function to scroll to a section
+    void scrollToSection(GlobalKey key) {
+      final context = key.currentContext;
+      if (context != null) {
+        Scrollable.ensureVisible(
+          context,
+          duration: const Duration(milliseconds: 1000),
+          curve: Curves.easeInOutCubic,
+        );
+      }
+    }
+
     return Scaffold(
       body: Stack(
         children: [
-          // Dynamic gradient background based on theme
+          // Dynamic holographic background
           Container(
             decoration: BoxDecoration(
-              gradient: AppTheme.getBackgroundGradient(context),
+              gradient: RadialGradient(
+                colors: [
+                  Colors.blue.shade900.withOpacity(0.8),
+                  Colors.purple.shade900.withOpacity(0.6),
+                  Colors.black.withOpacity(0.9),
+                ],
+                center: Alignment.center,
+                radius: 1.2,
+              ),
             ),
-          ).animate().fadeIn(duration: 1000.ms),
-          // Animated particles effect
+          ).animate().fadeIn(duration: 1200.ms),
+          // Animated particle effects for futuristic ambiance
           Positioned.fill(
             child: Stack(
-              children: List.generate(10, (index) {
+              children: List.generate(15, (index) {
                 return Positioned(
-                  left: (index * 100) % size.width,
-                  top: (index * 200) % size.height,
+                  left: (index * 150) % size.width,
+                  top: (index * 250) % size.height,
                   child: Container(
-                    width: 20,
-                    height: 20,
+                    width: 10 + (index % 5).toDouble(),
+                    height: 10 + (index % 5).toDouble(),
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: colorScheme.onSurface.withOpacity(0.2),
+                      color: Colors.cyan.withOpacity(0.3),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.cyan.withOpacity(0.2),
+                          blurRadius: 8,
+                          spreadRadius: 2,
+                        ),
+                      ],
                     ),
                   ).animate(
                     onPlay: (controller) => controller.repeat(reverse: true),
                   ).moveY(
-                    begin: -20,
-                    end: 20,
-                    duration: (2000 + index * 200).ms,
-                    curve: Curves.easeInOut,
+                    begin: -30,
+                    end: 30,
+                    duration: (1500 + index * 300).ms,
+                    curve: Curves.easeInOutSine,
+                  ).fade(
+                    begin: 0.3,
+                    end: 0.8,
+                    duration: (1500 + index * 300).ms,
                   ),
                 );
               }),
             ),
           ),
           // Main content
-          Center(
-            child: SingleChildScrollView(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  // Profile image with glowing effect
-                  Container(
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      boxShadow: [
-                        BoxShadow(
-                          color: colorScheme.primary.withOpacity(0.5),
-                          blurRadius: 20,
-                          spreadRadius: 5,
-                        ),
-                      ],
+          Column(
+            children: [
+              // Top navigation bar with neon glow
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                decoration: BoxDecoration(
+                  color: Colors.black.withOpacity(0.7),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.cyan.shade200.withOpacity(0.3),
+                      blurRadius: 10,
+                      spreadRadius: 2,
                     ),
-                    child: ClipOval(
-                      child: SizedBox(
-                        height: 200,
-                        width: 200,
-                        child: Lottie.asset(
-                          'assets/dev.json',
-                          fit: BoxFit.cover,
-                        ),
+                  ],
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Portfolio',
+                      style: textTheme.titleLarge!.copyWith(
+                        color: Colors.cyan.shade300,
+                        fontWeight: FontWeight.w900,
+                        fontFamily: 'Orbitron',
+                        letterSpacing: 2,
                       ),
+                    ).animate().fadeIn(duration: 800.ms).scaleXY(
+                      begin: 0.8,
+                      end: 1.0,
+                      duration: 800.ms,
+                      curve: Curves.easeOutExpo,
                     ),
-                  )
-                      .animate()
-                      .scaleXY(
-                    begin: 0.5,
-                    end: 1.0,
-                    duration: 800.ms,
-                    curve: Curves.elasticOut,
-                  )
-                      .fadeIn(duration: 1000.ms),
-                  const SizedBox(height: 32),
-                  // Name with continuous pulsing and shadow animation
-                  Text(
-                    'Nadeem Ahmed Ansari',
-                    style: textTheme.displaySmall!.copyWith(
-                      color: colorScheme.tertiaryFixed,
-                      fontWeight: FontWeight.bold,
-                      shadows: [
-                        Shadow(
-                          color: Colors.black.withOpacity(0.3),
-                          blurRadius: 10,
+                    isMobile
+                        ? PopupMenuButton<String>(
+                      icon: Icon(Icons.menu, color: Colors.cyan.shade200),
+                      color: Colors.black87,
+                      onSelected: (value) {
+                        if (value == 'home') scrollToSection(homeKey);
+                        if (value == 'about') scrollToSection(aboutKey);
+                        if (value == 'projects') scrollToSection(projectsKey);
+                        if (value == 'skills') scrollToSection(skillsKey);
+                        if (value == 'contact') scrollToSection(contactKey);
+                      },
+                      itemBuilder: (context) => [
+                        PopupMenuItem(
+                          value: 'home',
+                          child: Text('Home', style: TextStyle(color: Colors.cyan.shade200)),
+                        ),
+                        PopupMenuItem(
+                          value: 'about',
+                          child: Text('About', style: TextStyle(color: Colors.cyan.shade200)),
+                        ),
+                        PopupMenuItem(
+                          value: 'projects',
+                          child: Text('Projects', style: TextStyle(color: Colors.cyan.shade200)),
+                        ),
+                        PopupMenuItem(
+                          value: 'skills',
+                          child: Text('Skills', style: TextStyle(color: Colors.cyan.shade200)),
+                        ),
+                        PopupMenuItem(
+                          value: 'contact',
+                          child: Text('Contact', style: TextStyle(color: Colors.cyan.shade200)),
                         ),
                       ],
-                    ),
-                    textAlign: TextAlign.center,
-                  )
-                      .animate(onPlay: (controller) => controller.repeat(reverse: true))
-                      .fadeIn(duration: 1200.ms, delay: 200.ms)
-                      .slideY(begin: 0.2, end: 0.0, duration: 800.ms)
-                      .scaleXY(
-                    begin: 0.95,
-                    end: 1.05,
-                    duration: 2000.ms,
-                    curve: Curves.easeInOutSine,
-                  )
-                      .custom(
-                    duration: 2000.ms,
-                    builder: (context, value, child) {
-                      return Transform.translate(
-                        offset: Offset(0, 2 * value),
-                        child: child,
-                      );
-                    },
-                  ),
-                  // Role with continuous color cycling
-                  Text(
-                    'Software Engineer | Flutter Developer | ML Enthusiast',
-                    style: textTheme.titleLarge!.copyWith(
-                      color: colorScheme.tertiaryFixed.withOpacity(0.7),
-                      fontSize: isMobile ? 16 : 20, // Responsive font size
-                    ),
-                    textAlign: TextAlign.center,
-                    maxLines: 2, // Prevent overflow on small screens
-                  )
-                      .animate(onPlay: (controller) => controller.repeat())
-                      .fadeIn(duration: 1200.ms, delay: 400.ms)
-                      .custom(
-                    duration: 3000.ms,
-                    builder: (context, value, child) {
-                      final isDark = Theme.of(context).brightness == Brightness.dark;
-                      return DefaultTextStyle(
-                        style: textTheme.titleLarge!.copyWith(
-                          color: Color.lerp(
-                            colorScheme.tertiaryFixed.withOpacity(0.7),
-                            isDark ? Colors.blue[300]! : Colors.purple[400]!,
-                            value,
-                          ),
-                          fontSize: isMobile ? 16 : 20,
+                    ).animate().fadeIn(duration: 800.ms, delay: 200.ms)
+                        : Row(
+                      children: [
+                        _NavButton(
+                          text: 'Home',
+                          onPressed: () => scrollToSection(homeKey),
+                          colorScheme: colorScheme,
                         ),
-                        child: child,
-                      );
-                    },
-                  ),
-                  const SizedBox(height: 16),
-                  // Tagline with wave-like movement and shimmer
-                  Text(
-                    '"Building the future, one pixel at a time."',
-                    style: textTheme.bodyLarge!.copyWith(
-                      color: colorScheme.tertiaryFixed,
-                      fontStyle: FontStyle.italic,
-                    ),
-                    textAlign: TextAlign.center,
-                  )
-                      .animate(onPlay: (controller) => controller.repeat(reverse: true))
-                      .fadeIn(duration: 1200.ms, delay: 600.ms)
-                      .scaleXY(
-                    begin: 0.8,
-                    end: 1.0,
-                    duration: 800.ms,
-                    curve: Curves.bounceOut,
-                  )
-                      .custom(
-                    duration: 2000.ms,
-                    builder: (context, value, child) {
-                      return Transform.translate(
-                        offset: Offset(0, 5 * (value - 0.5)),
-                        child: child,
-                      );
-                    },
-                  )
-                      .shimmer(
-                    color: colorScheme.secondary.withOpacity(0.5),
-                    duration: 2500.ms,
-                  ),
-                  const SizedBox(height: 48),
-                  // Call-to-action buttons
-                  Wrap(
-                    spacing: 16,
-                    runSpacing: 16,
-                    alignment: WrapAlignment.center,
+                        _NavButton(
+                          text: 'About',
+                          onPressed: () => scrollToSection(aboutKey),
+                          colorScheme: colorScheme,
+                        ),
+                        _NavButton(
+                          text: 'Projects',
+                          onPressed: () => scrollToSection(projectsKey),
+                          colorScheme: colorScheme,
+                        ),
+                        _NavButton(
+                          text: 'Skills',
+                          onPressed: () => scrollToSection(skillsKey),
+                          colorScheme: colorScheme,
+                        ),
+                        _NavButton(
+                          text: 'Contact',
+                          onPressed: () => scrollToSection(contactKey),
+                          colorScheme: colorScheme,
+                        ),
+                      ],
+                    ).animate().fadeIn(duration: 800.ms, delay: 200.ms),
+                  ],
+                ),
+              ),
+              // Scrollable content
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Column(
                     children: [
-                      AnimatedButton(
-                        text: 'View Projects',
-                        onPressed: () => context.go('/projects'),
+                      // Home section with holographic profile
+                      Container(
+                        key: homeKey,
+                        padding: EdgeInsets.symmetric(vertical: isMobile ? 40 : 80),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            // Holographic profile animation
+                            Container(
+                              width: isMobile ? 180 : 250,
+                              height: isMobile ? 180 : 250,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                gradient: RadialGradient(
+                                  colors: [
+                                    Colors.cyan.shade200.withOpacity(0.4),
+                                    Colors.transparent,
+                                  ],
+                                ),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.cyan.shade300.withOpacity(0.5),
+                                    blurRadius: 20,
+                                    spreadRadius: 5,
+                                  ),
+                                ],
+                              ),
+                              child: Stack(
+                                alignment: Alignment.center,
+                                children: [
+                                  Lottie.asset(
+                                    'assets/dev.json', // Replace with a futuristic hologram Lottie
+                                    fit: BoxFit.cover,
+                                  ),
+                                  Container(
+                                    width: isMobile ? 120 : 160,
+                                    height: isMobile ? 120 : 160,
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      border: Border.all(
+                                        color: Colors.cyan.shade200.withOpacity(0.5),
+                                        width: 2,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ).animate().scaleXY(
+                              begin: 0.5,
+                              end: 1.0,
+                              duration: 1000.ms,
+                              curve: Curves.easeOutBack,
+                            ).fadeIn(duration: 1200.ms),
+                            SizedBox(height: isMobile ? 24 : 40),
+                            // Name with neon glow
+                            ShaderMask(
+                              shaderCallback: (bounds) => LinearGradient(
+                                colors: [Colors.cyan.shade300, Colors.purple.shade300],
+                              ).createShader(bounds),
+                              child: Text(
+                                'Nadeem Ahmed Ansari',
+                                style: textTheme.displaySmall!.copyWith(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w900,
+                                  fontFamily: 'Orbitron',
+                                  letterSpacing: 2,
+                                  shadows: [
+                                    Shadow(
+                                      color: Colors.cyan.shade300.withOpacity(0.5),
+                                      blurRadius: 15,
+                                    ),
+                                  ],
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            ).animate(onPlay: (controller) => controller.repeat(reverse: true))
+                                .fadeIn(duration: 1200.ms, delay: 200.ms)
+                                .scaleXY(
+                              begin: 0.9,
+                              end: 1.1,
+                              duration: 3000.ms,
+                              curve: Curves.easeInOutSine,
+                            ),
+                            SizedBox(height: isMobile ? 12 : 16),
+                            // Role with dynamic color shift
+                            Text(
+                              'Software Engineer | Flutter Developer | ML Enthusiast',
+                              style: textTheme.titleLarge!.copyWith(
+                                color: Colors.cyan.shade100.withOpacity(0.8),
+                                fontFamily: 'Orbitron',
+                                fontSize: isMobile ? 14 : 18,
+                                letterSpacing: 1.5,
+                              ),
+                              textAlign: TextAlign.center,
+                            ).animate(onPlay: (controller) => controller.repeat())
+                                .fadeIn(duration: 1200.ms, delay: 400.ms)
+                                .custom(
+                              duration: 4000.ms,
+                              builder: (context, value, child) {
+                                return DefaultTextStyle(
+                                  style: textTheme.titleLarge!.copyWith(
+                                    color: Color.lerp(
+                                      Colors.cyan.shade100.withOpacity(0.8),
+                                      Colors.purple.shade200.withOpacity(0.8),
+                                      value,
+                                    ),
+                                    fontFamily: 'Orbitron',
+                                    fontSize: isMobile ? 14 : 18,
+                                    letterSpacing: 1.5,
+                                  ),
+                                  child: child,
+                                );
+                              },
+                            ),
+                            SizedBox(height: isMobile ? 12 : 16),
+                            // Tagline with holographic shimmer
+                            Text(
+                              '"Crafting the Future, One Code at a Time"',
+                              style: textTheme.bodyLarge!.copyWith(
+                                color: Colors.white70,
+                                fontStyle: FontStyle.italic,
+                                fontFamily: 'Orbitron',
+                                letterSpacing: 1,
+                              ),
+                              textAlign: TextAlign.center,
+                            ).animate(onPlay: (controller) => controller.repeat(reverse: true))
+                                .fadeIn(duration: 1200.ms, delay: 600.ms)
+                                .shimmer(
+                              color: Colors.cyan.shade200.withOpacity(0.5),
+                              duration: 3000.ms,
+                            )
+                                .moveY(
+                              begin: -10,
+                              end: 10,
+                              duration: 2000.ms,
+                              curve: Curves.easeInOutSine,
+                            ),
+                            SizedBox(height: isMobile ? 32 : 48),
+                            // Call-to-action buttons with neon hover
+                            Wrap(
+                              spacing: 16,
+                              runSpacing: 16,
+                              alignment: WrapAlignment.center,
+                              children: [
+                                AnimatedButton(
+                                  text: 'View Projects',
+                                  onPressed: () => scrollToSection(projectsKey),
+                                  color: Colors.cyan.shade400,
+                                ),
+                                AnimatedButton(
+                                  text: 'Contact Me',
+                                  onPressed: () => scrollToSection(contactKey),
+                                  color: Colors.purple.shade400,
+                                ),
+                                AnimatedButton(
+                                  text: 'Download Resume',
+                                  onPressed: () {
+                                    // TODO: Implement resume download
+                                  },
+                                  color: Colors.blue.shade400,
+                                ),
+                              ],
+                            ).animate().fadeIn(duration: 1200.ms, delay: 800.ms).slideY(
+                              begin: 0.3,
+                              end: 0.0,
+                              curve: Curves.easeOutCubic,
+                            ),
+                          ],
+                        ),
                       ),
-                      AnimatedButton(
-                        text: 'Contact Me',
-                        onPressed: () => context.go('/contact'),
+                      // About section with parallax effect
+                      Container(
+                        key: aboutKey,
+                        padding: EdgeInsets.all(isMobile ? 16 : 32),
+                        decoration: BoxDecoration(
+                          color: Colors.black.withOpacity(0.5),
+                          border: Border.symmetric(
+                            horizontal: BorderSide(
+                              color: Colors.cyan.shade200.withOpacity(0.3),
+                              width: 1,
+                            ),
+                          ),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'About Me',
+                              style: textTheme.headlineMedium!.copyWith(
+                                color: Colors.cyan.shade200,
+                                fontFamily: 'Orbitron',
+                                letterSpacing: 1.5,
+                              ),
+                            ).animate().fadeIn(duration: 800.ms).slideX(
+                              begin: -0.2,
+                              end: 0.0,
+                              curve: Curves.easeOutQuad,
+                            ),
+                            SizedBox(height: 16),
+                            Text(
+                              'I’m a passionate Flutter developer crafting seamless cross-platform apps with a flair for innovation. My expertise spans Python, Machine Learning, and cloud technologies like AWS. I thrive on building intuitive, high-performance applications that push boundaries.',
+                              style: textTheme.bodyLarge!.copyWith(
+                                color: Colors.white70,
+                                fontFamily: 'Orbitron',
+                              ),
+                            ).animate().fadeIn(duration: 800.ms, delay: 200.ms),
+                            SizedBox(height: 24),
+                            Text(
+                              'Tech Stack',
+                              style: textTheme.titleLarge!.copyWith(
+                                color: Colors.cyan.shade200,
+                                fontFamily: 'Orbitron',
+                              ),
+                            ).animate().fadeIn(duration: 800.ms, delay: 400.ms),
+                            SizedBox(height: 12),
+                            Wrap(
+                              spacing: 12,
+                              runSpacing: 12,
+                              children: const [
+                                Chip(
+                                  label: Text('Flutter', style: TextStyle(fontFamily: 'Orbitron')),
+                                  backgroundColor: Colors.cyanAccent,
+                                  labelStyle: TextStyle(color: Colors.black87),
+                                ),
+                                Chip(
+                                  label: Text('Dart', style: TextStyle(fontFamily: 'Orbitron')),
+                                  backgroundColor: Colors.cyanAccent,
+                                  labelStyle: TextStyle(color: Colors.black87),
+                                ),
+                                Chip(
+                                  label: Text('Python', style: TextStyle(fontFamily: 'Orbitron')),
+                                  backgroundColor: Colors.cyanAccent,
+                                  labelStyle: TextStyle(color: Colors.black87),
+                                ),
+                                Chip(
+                                  label: Text('Scikit-learn', style: TextStyle(fontFamily: 'Orbitron')),
+                                  backgroundColor: Colors.cyanAccent,
+                                  labelStyle: TextStyle(color: Colors.black87),
+                                ),
+                                Chip(
+                                  label: Text('Firebase', style: TextStyle(fontFamily: 'Orbitron')),
+                                  backgroundColor: Colors.cyanAccent,
+                                  labelStyle: TextStyle(color: Colors.black87),
+                                ),
+                                Chip(
+                                  label: Text('AWS', style: TextStyle(fontFamily: 'Orbitron')),
+                                  backgroundColor: Colors.cyanAccent,
+                                  labelStyle: TextStyle(color: Colors.black87),
+                                ),
+                              ],
+                            ).animate().fadeIn(duration: 800.ms, delay: 600.ms),
+                          ],
+                        ),
                       ),
-                      AnimatedButton(
-                        text: 'Download Resume',
-                        onPressed: () {
-                          // TODO: Implement resume download
-                        },
+                      // Projects section with holographic cards
+                      Container(
+                        key: projectsKey,
+                        padding: EdgeInsets.all(isMobile ? 16 : 32),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Projects',
+                              style: textTheme.headlineMedium!.copyWith(
+                                color: Colors.cyan.shade200,
+                                fontFamily: 'Orbitron',
+                                letterSpacing: 1.5,
+                              ),
+                            ).animate().fadeIn(duration: 800.ms).slideX(
+                              begin: -0.2,
+                              end: 0.0,
+                              curve: Curves.easeOutQuad,
+                            ),
+                            SizedBox(height: 16),
+                            GridView.builder(
+                              shrinkWrap: true,
+                              physics: const NeverScrollableScrollPhysics(),
+                              gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                                maxCrossAxisExtent: isMobile ? 300 : 400,
+                                crossAxisSpacing: 16,
+                                mainAxisSpacing: 16,
+                                childAspectRatio: 0.75,
+                              ),
+                              itemCount: _projects.length,
+                              itemBuilder: (context, index) {
+                                return ProjectCard(project: _projects[index]).animate().fadeIn(
+                                  duration: 800.ms,
+                                  delay: (index * 200).ms,
+                                ).scaleXY(
+                                  begin: 0.8,
+                                  end: 1.0,
+                                  curve: Curves.easeOutCubic,
+                                );
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
+                      // Skills section with progress bars
+                      Container(
+                        key: skillsKey,
+                        padding: EdgeInsets.all(isMobile ? 16 : 32),
+                        decoration: BoxDecoration(
+                          color: Colors.black.withOpacity(0.5),
+                          border: Border.symmetric(
+                            horizontal: BorderSide(
+                              color: Colors.cyan.shade200.withOpacity(0.3),
+                              width: 1,
+                            ),
+                          ),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'My Skills',
+                              style: textTheme.headlineMedium!.copyWith(
+                                color: Colors.cyan.shade200,
+                                fontFamily: 'Orbitron',
+                                letterSpacing: 1.5,
+                              ),
+                            ).animate().fadeIn(duration: 800.ms).slideX(
+                              begin: -0.2,
+                              end: 0.0,
+                              curve: Curves.easeOutQuad,
+                            ),
+                            SizedBox(height: 16),
+                            ..._skills.asMap().entries.map((entry) {
+                              final skill = entry.value;
+                              return Padding(
+                                padding: const EdgeInsets.only(bottom: 16.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      skill['name'],
+                                      style: textTheme.titleMedium!.copyWith(
+                                        color: Colors.cyan.shade100,
+                                        fontFamily: 'Orbitron',
+                                      ),
+                                    ),
+                                    SizedBox(height: 8),
+                                    LinearProgressIndicator(
+                                      value: skill['rating'] / 5.0,
+                                      backgroundColor: Colors.black45,
+                                      color: Colors.cyan.shade300,
+                                      minHeight: 8,
+                                      borderRadius: BorderRadius.circular(4),
+                                    ),
+                                  ],
+                                ).animate().fadeIn(
+                                  duration: 800.ms,
+                                  delay: (entry.key * 200).ms,
+                                ),
+                              );
+                            }),
+                          ],
+                        ),
+                      ),
+                      // Contact section
+                      Container(
+                        key: contactKey,
+                        padding: EdgeInsets.all(isMobile ? 16 : 32),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Get in Touch',
+                              style: textTheme.headlineMedium!.copyWith(
+                                color: Colors.cyan.shade200,
+                                fontFamily: 'Orbitron',
+                                letterSpacing: 1.5,
+                              ),
+                            ).animate().fadeIn(duration: 800.ms).slideX(
+                              begin: -0.2,
+                              end: 0.0,
+                              curve: Curves.easeOutQuad,
+                            ),
+                            SizedBox(height: 16),
+                            Text(
+                              'Let’s connect! Reach out via email or find me on social media to discuss projects or opportunities.',
+                              style: textTheme.bodyLarge!.copyWith(
+                                color: Colors.white70,
+                                fontFamily: 'Orbitron',
+                              ),
+                            ).animate().fadeIn(duration: 800.ms, delay: 200.ms),
+                            SizedBox(height: 24),
+                            const SocialLinks().animate().fadeIn(
+                              duration: 800.ms,
+                              delay: 400.ms,
+                            ).scaleXY(
+                              begin: 0.8,
+                              end: 1.0,
+                              curve: Curves.easeOutCubic,
+                            ),
+                          ],
+                        ),
                       ),
                     ],
-                  ).animate().fadeIn(duration: 1200.ms, delay: 800.ms).slideY(
-                    begin: 0.2,
-                    end: 0.0,
                   ),
-                ],
+                ),
               ),
+            ],
+          ),
+          // Theme toggle with futuristic button
+          Positioned(
+            top: 80,
+            right: 20,
+            child: GestureDetector(
+              onTap: () {
+                ref.read(themeModeProvider.notifier).state =
+                ref.read(themeModeProvider) == ThemeMode.light ? ThemeMode.dark : ThemeMode.light;
+              },
+              child: Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.black.withOpacity(0.7),
+                  border: Border.all(color: Colors.cyan.shade200, width: 1.5),
+                ),
+                child: Icon(
+                  ref.watch(themeModeProvider) == ThemeMode.light
+                      ? Icons.brightness_high
+                      : Icons.brightness_low,
+                  color: Colors.cyan.shade200,
+                  size: 24,
+                ),
+              ),
+            ).animate().fadeIn(duration: 1000.ms).scaleXY(
+              begin: 0.5,
+              end: 1.0,
+              curve: Curves.easeOutBack,
             ),
           ),
-          // Theme toggle button
-          Positioned(
-            top: 16,
-            right: 16,
-            child: IconButton(
-              icon: ref.watch(themeModeProvider) == ThemeMode.light
-                  ? Icon(Icons.brightness_6, color: colorScheme.onSurface)
-                  : Icon(Icons.brightness_4, color: colorScheme.onSurface),
-              onPressed: () {
-                ref.read(themeModeProvider.notifier).state =
-                ref.read(themeModeProvider) == ThemeMode.light
-                    ? ThemeMode.dark
-                    : ThemeMode.light;
-              },
-            ).animate().fadeIn(duration: 1000.ms),
-          ),
         ],
+      ),
+    );
+  }
+
+  // Project data
+  static const List<ProjectModel> _projects = [
+    ProjectModel(
+      title: 'E-Commerce App',
+      description: 'A cross-platform shopping app built with Flutter and Firebase.',
+      tags: ['Flutter', 'Firebase', 'Dart'],
+      githubLink: 'https://github.com',
+      demoLink: 'https://example.com',
+      imageUrl: 'https://via.placeholder.com/300x200',
+    ),
+    ProjectModel(
+      title: 'ML Predictor',
+      description: 'A machine learning model deployed with Flask and AWS.',
+      tags: ['Python', 'Scikit-learn', 'AWS'],
+      githubLink: 'https://github.com',
+      imageUrl: 'https://via.placeholder.com/300x200',
+    ),
+  ];
+
+  // Skills data
+  static const List<Map<String, dynamic>> _skills = [
+    {'name': 'Flutter', 'rating': 4.5},
+    {'name': 'Dart', 'rating': 4.0},
+    {'name': 'Python', 'rating': 4.5},
+    {'name': 'Scikit-learn', 'rating': 3.5},
+    {'name': 'Firebase', 'rating': 4.0},
+    {'name': 'AWS', 'rating': 3.5},
+  ];
+}
+
+// Custom navigation button with neon hover effect
+class _NavButton extends StatefulWidget {
+  final String text;
+  final VoidCallback onPressed;
+  final ColorScheme colorScheme;
+
+  const _NavButton({
+    required this.text,
+    required this.onPressed,
+    required this.colorScheme,
+  });
+
+  @override
+  _NavButtonState createState() => _NavButtonState();
+}
+
+class _NavButtonState extends State<_NavButton> {
+  bool _isHovered = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return MouseRegion(
+      onEnter: (_) => setState(() => _isHovered = true),
+      onExit: (_) => setState(() => _isHovered = false),
+      child: GestureDetector(
+        onTap: widget.onPressed,
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          decoration: BoxDecoration(
+            border: Border(bottom: BorderSide(
+              color: _isHovered ? Colors.cyan.shade200 : Colors.transparent,
+              width: 2,
+            )),
+          ),
+          child: Text(
+            widget.text,
+            style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+              color: _isHovered ? Colors.cyan.shade200 : Colors.cyan.shade100,
+              fontFamily: 'Orbitron',
+              letterSpacing: 1,
+            ),
+          ),
+        ),
       ),
     );
   }
