@@ -9,8 +9,7 @@ class SplashScreen extends ConsumerStatefulWidget {
   ConsumerState<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends ConsumerState<SplashScreen>
-    with TickerProviderStateMixin {
+class _SplashScreenState extends ConsumerState<SplashScreen> with TickerProviderStateMixin {
   late AnimationController _controller;
   late AnimationController _bgController;
   late AnimationController _orbitController;
@@ -23,7 +22,6 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
   @override
   void initState() {
     super.initState();
-
 
     _controller = AnimationController(
       vsync: this,
@@ -92,6 +90,20 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+    final isMobile = size.width < 600;
+    final textTheme = Theme.of(context).textTheme;
+
+    // Responsive font size adjustments
+    final responsiveTextTheme = textTheme.copyWith(
+      headlineMedium: textTheme.headlineMedium!.copyWith(
+        fontSize: isMobile ? 22 : 28, // Reduced from ~32-34 for mobile
+      ),
+      titleLarge: textTheme.titleLarge!.copyWith(
+        fontSize: isMobile ? 16 : 20, // Reduced from ~20-22 for mobile
+      ),
+    );
+
     return Scaffold(
       body: AnimatedBuilder(
         animation: Listenable.merge([_controller, _bgController, _orbitController]),
@@ -116,10 +128,10 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                 children: [
                   // Ripple effect with clamped opacity
                   Transform.scale(
-                    scale: _rippleAnimation.value * 1.5,
+                    scale: _rippleAnimation.value * (isMobile ? 1.2 : 1.5),
                     child: Container(
-                      width: 180,
-                      height: 180,
+                      width: isMobile ? 140 : 180,
+                      height: isMobile ? 140 : 180,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         color: Colors.cyan.withOpacity((0.15 * (1 - _rippleAnimation.value)).clamp(0.0, 1.0)),
@@ -140,8 +152,8 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                             children: [
                               // Core orb
                               Container(
-                                width: 120,
-                                height: 120,
+                                width: isMobile ? 100 : 120,
+                                height: isMobile ? 100 : 120,
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
                                   gradient: RadialGradient(
@@ -155,8 +167,8 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                                   boxShadow: [
                                     BoxShadow(
                                       color: Colors.cyan.shade300.withOpacity(0.5),
-                                      blurRadius: 25,
-                                      spreadRadius: 8,
+                                      blurRadius: isMobile ? 20 : 25,
+                                      spreadRadius: isMobile ? 6 : 8,
                                     ),
                                   ],
                                 ),
@@ -165,13 +177,13 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                               Transform.rotate(
                                 angle: _orbitAnimation.value,
                                 child: Container(
-                                  width: 160,
-                                  height: 160,
+                                  width: isMobile ? 130 : 160,
+                                  height: isMobile ? 130 : 160,
                                   decoration: BoxDecoration(
                                     shape: BoxShape.circle,
                                     border: Border.all(
                                       color: Colors.cyan.withOpacity(0.4),
-                                      width: 1.5,
+                                      width: isMobile ? 1.2 : 1.5,
                                     ),
                                   ),
                                 ),
@@ -180,20 +192,20 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                               Transform.rotate(
                                 angle: -_orbitAnimation.value * 0.7,
                                 child: Container(
-                                  width: 140,
-                                  height: 140,
+                                  width: isMobile ? 115 : 140,
+                                  height: isMobile ? 115 : 140,
                                   decoration: BoxDecoration(
                                     shape: BoxShape.circle,
                                     border: Border.all(
                                       color: Colors.purple.withOpacity(0.4),
-                                      width: 1.5,
+                                      width: isMobile ? 1.2 : 1.5,
                                     ),
                                   ),
                                 ),
                               ),
                             ],
                           ),
-                          const SizedBox(height: 40),
+                          SizedBox(height: isMobile ? 32 : 40),
                           // Name with cyberpunk gradient text
                           ShaderMask(
                             shaderCallback: (bounds) => LinearGradient(
@@ -204,53 +216,55 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                             ).createShader(bounds),
                             child: Text(
                               'Nadeem Ahmed Ansari',
-                              style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                              style: responsiveTextTheme.headlineMedium?.copyWith(
                                 fontWeight: FontWeight.w900,
                                 color: Colors.white,
                                 letterSpacing: 1.5,
                                 fontFamily: 'Orbitron',
                               ),
+                              textAlign: TextAlign.center,
                             ),
                           ),
-                          const SizedBox(height: 16),
+                          SizedBox(height: isMobile ? 12 : 16),
                           // Profession with neon effect
                           Opacity(
                             opacity: _opacityAnimation.value * 0.85,
                             child: Text(
                               'Flutter Developer',
-                              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                              style: responsiveTextTheme.titleLarge?.copyWith(
                                 fontWeight: FontWeight.w400,
                                 color: Colors.cyan.shade100.withOpacity(0.9),
                                 letterSpacing: 1.0,
                                 fontFamily: 'Orbitron',
                               ),
+                              textAlign: TextAlign.center,
                             ),
                           ),
-                          const SizedBox(height: 40),
+                          SizedBox(height: isMobile ? 32 : 40),
                           // Custom loading indicator with pulse
                           SizedBox(
-                            width: 32,
-                            height: 32,
+                            width: isMobile ? 28 : 32,
+                            height: isMobile ? 28 : 32,
                             child: Stack(
                               alignment: Alignment.center,
                               children: [
                                 CircularProgressIndicator(
-                                  strokeWidth: 2.5,
+                                  strokeWidth: isMobile ? 2 : 2.5,
                                   valueColor: AlwaysStoppedAnimation<Color>(
                                     Colors.cyan.withOpacity(0.8),
                                   ),
                                 ),
                                 Container(
-                                  width: 12,
-                                  height: 12,
+                                  width: isMobile ? 10 : 12,
+                                  height: isMobile ? 10 : 12,
                                   decoration: BoxDecoration(
                                     shape: BoxShape.circle,
                                     color: Colors.cyan.shade300,
                                     boxShadow: [
                                       BoxShadow(
                                         color: Colors.cyan.withOpacity(0.5),
-                                        blurRadius: 10,
-                                        spreadRadius: 3,
+                                        blurRadius: isMobile ? 8 : 10,
+                                        spreadRadius: isMobile ? 2 : 3,
                                       ),
                                     ],
                                   ),

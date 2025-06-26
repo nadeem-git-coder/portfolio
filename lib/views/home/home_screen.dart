@@ -312,7 +312,7 @@ class HomeScreen extends ConsumerWidget {
                             SizedBox(height: isMobile ? 12 : 16),
                             // Tagline with holographic shimmer
                             Text(
-                              '"Crafting the Future, One Code at a Time"',
+                              '"Building the future, one pixel at a time."',
                               style: textTheme.bodyLarge!.copyWith(
                                 color: Colors.white70,
                                 fontStyle: FontStyle.italic,
@@ -468,11 +468,16 @@ class HomeScreen extends ConsumerWidget {
                               end: 0.0,
                               curve: Curves.easeOutQuad,
                             ),
-                            SizedBox(height: 16),
+                            SizedBox(height: isMobile ? 14 : 16),
                             GridView.builder(
                               shrinkWrap: true,
                               physics: const NeverScrollableScrollPhysics(),
-                              gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                              gridDelegate: isMobile?SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: isMobile ? 1 : 2, // 1 column for mobile, 2 for larger screens
+                                crossAxisSpacing: 16,
+                                mainAxisSpacing: 16,
+                                childAspectRatio: isMobile ? 1.2 : 0.75, // Adjusted aspect ratio for mobile
+                              ):SliverGridDelegateWithMaxCrossAxisExtent(
                                 maxCrossAxisExtent: isMobile ? 300 : 400,
                                 crossAxisSpacing: 16,
                                 mainAxisSpacing: 16,
@@ -635,21 +640,36 @@ class HomeScreen extends ConsumerWidget {
   }
 
   // Project data
+  // Project data
   static const List<ProjectModel> _projects = [
     ProjectModel(
-      title: 'E-Commerce App',
-      description: 'A cross-platform shopping app built with Flutter and Firebase.',
-      tags: ['Flutter', 'Firebase', 'Dart'],
-      githubLink: 'https://github.com',
-      demoLink: 'https://example.com',
-      imageUrl: 'https://via.placeholder.com/300x200',
+      title: 'Crop Prediction | Farm Expert',
+      description:
+      'A machine learning web app facilitating accurate prediction of optimal crop selection with a precision rate of 90%. The system employs predictive analytics by analyzing variables such as rainfall, temperature, nitrogen, and phosphorous levels to forecast crop outcomes.',
+      tags: ['NumPy', 'Data Analysis', 'Pandas', 'Flask', 'Data Visualization'],
+      githubLink: 'https://github.com/nadeem-git-coder/Crop-Prediction',
+      demoLink: 'https://crop-prediction-fha3.onrender.com/',
     ),
     ProjectModel(
-      title: 'ML Predictor',
-      description: 'A machine learning model deployed with Flask and AWS.',
-      tags: ['Python', 'Scikit-learn', 'AWS'],
-      githubLink: 'https://github.com',
-      imageUrl: 'https://via.placeholder.com/300x200',
+      title: 'Flower Species Image Classifier',
+      description:
+      'A personalized image classifier to identify different flower species. Built a robust neural network using PyTorch with a command-line interface for seamless usage, leveraging NumPy, Pandas, and Matplotlib for data manipulation and visualization.',
+      tags: ['PyTorch', 'Data Visualization', 'Neural Networks', 'Computer Vision'],
+      githubLink: 'https://github.com/nadeem-git-coder/AI-Programming-with-Python-Udacity-Nandegree',
+    ),
+    ProjectModel(
+      title: 'Dog Breed Image Classifier',
+      description:
+      'An image classification project using convolutional neural networks (CNNs) like AlexNet, VGG, and ResNet to identify dog breeds. Trained on ImageNet, the classifier processes and predicts image content with high accuracy.',
+      tags: ['Convolutional Neural Networks (CNN)', 'Data Visualization', 'Computer Vision'],
+      githubLink: 'https://github.com/nadeem-git-coder/AI-Programming-with-Python-Udacity-Nandegree',
+    ),
+    ProjectModel(
+      title: 'Bike Sharing Demand Prediction',
+      description:
+      'Utilized AutoGluon on AWS SageMaker to predict bike-sharing demand, achieving a Kaggle score of 0.59830. Conducted exploratory data analysis and feature engineering to uncover patterns and optimize model performance.',
+      tags: ['AutoGluon', 'Feature Engineering', 'Data Visualization', 'EDA', 'AWS SageMaker', 'Hyperparameter Tuning'],
+      githubLink: 'https://github.com/nadeem-git-coder/bike-sharing-demand-',
     ),
   ];
 

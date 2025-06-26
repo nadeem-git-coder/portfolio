@@ -13,14 +13,14 @@ class ProjectsScreen extends StatelessWidget {
       tags: ['Flutter', 'Firebase', 'Dart'],
       githubLink: 'https://github.com',
       demoLink: 'https://example.com',
-      imageUrl: 'https://via.placeholder.com/300x200',
+      // imageUrl: 'https://via.placeholder.com/300x200',
     ),
     ProjectModel(
       title: 'ML Predictor',
       description: 'A machine learning model deployed with Flask and AWS.',
       tags: ['Python', 'Scikit-learn', 'AWS'],
       githubLink: 'https://github.com',
-      imageUrl: 'https://via.placeholder.com/300x200',
+      // imageUrl: 'https://via.placeholder.com/300x200',
     ),
   ];
 
