@@ -75,6 +75,7 @@ flutter:
     - assets/dev.json
     - assets/images/profile.jpg
     - assets/images/portfolio.png
+    - assets/images/udacity_logo.png
 
 
   # An image asset can refer to one or more resolution-specific "variants", see
